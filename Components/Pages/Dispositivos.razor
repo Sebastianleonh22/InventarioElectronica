@@ -1,0 +1,115 @@
+﻿@page "/dispositivos"
+@using InventarioElectronica.Models
+
+<h3>Dispositivos</h3>
+
+<h4>Nuevo Dispositivo</h4>
+<label for="tipoDispositivo">Tipo de Dispositivo:</label>
+<select id="tipoDispositivo" @bind="tipoDispositivo">
+    <option value="Laptop">Laptop</option>
+    <option value="Smartphone">Smartphone</option>
+    <option value="Tablet">Tablet</option>
+</select>
+<input type="text" @bind="nuevoDispositivo.NumeroDeSerie" placeholder="Número de Serie" />
+<input type="text" @bind="nuevoDispositivo.Marca" placeholder="Marca" />
+<input type="text" @bind="nuevoDispositivo.Modelo" placeholder="Modelo" />
+
+@if (tipoDispositivo == "Laptop")
+{
+    <div>
+        <label for="memoriaRAM">Memoria RAM (GB):</label>
+        <input type="number" @bind="nuevoLaptop.MemoriaRAM" placeholder="Memoria RAM (GB)" />
+        <label for="almacenamiento">Almacenamiento (GB):</label>
+        <input type="number" @bind="nuevoLaptop.Almacenamiento" placeholder="Almacenamiento (GB)" />
+    </div>
+}
+else if (tipoDispositivo == "Smartphone")
+{
+    <div>
+        <label for="sistemaOperativo">Sistema Operativo:</label>
+        <input type="text" @bind="nuevoSmartphone.SistemaOperativo" placeholder="Sistema Operativo" />
+        <label for="numeroCamaras">Número de Cámaras:</label>
+        <input type="number" @bind="nuevoSmartphone.NumeroDeCamaras" placeholder="Número de Cámaras" />
+    </div>
+}
+else if (tipoDispositivo == "Tablet")
+{
+    <div>
+        <label for="tamañoPantalla">Tamaño de Pantalla (pulgadas):</label>
+        <input type="number" @bind="nuevoTablet.TamañoPantalla" placeholder="Tamaño de Pantalla (pulgadas)" />
+        <label for="soporteStylus">Soporte para Stylus:</label>
+        <input type="checkbox" @bind="nuevoTablet.SoporteParaStylus" /> Soporte para Stylus
+    </div>
+}
+
+<button @onclick="MostrarDispositivos">Mostrar Dispositivos</button>
+
+@if (mostrarTabla && dispositivos.Any())
+{
+    <h4>Dispositivos Guardados</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Número de Serie</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dispositivo in dispositivos)
+            {
+                <tr>
+                    <td>@dispositivo.NumeroDeSerie</td>
+                    <td>@dispositivo.Marca</td>
+                    <td>@dispositivo.Modelo</td>
+                    <td>
+                        @if (dispositivo is Laptop)
+                        {
+                            var laptop = dispositivo as Laptop;
+                            <text>Memoria RAM: @laptop.MemoriaRAM GB, Almacenamiento: @laptop.Almacenamiento GB</text>
+                        }
+                        else if (dispositivo is Smartphone)
+                        {
+                            var smartphone = dispositivo as Smartphone;
+                            <text>Sistema Operativo: @smartphone.SistemaOperativo, Número de Cámaras: @smartphone.NumeroDeCamaras</text>
+                        }
+                        else if (dispositivo is Tablet)
+                        {
+                            var tablet = dispositivo as Tablet;
+                            <text>Tamaño de Pantalla: @tablet.TamañoPantalla pulgadas, Soporte para Stylus: @tablet.SoporteParaStylus ? "Sí" : "No"</text>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Dispositivo> dispositivos = new List<Dispositivo>();
+    private Dispositivo nuevoDispositivo = new Dispositivo();
+    private Laptop nuevoLaptop = new Laptop();
+    private Smartphone nuevoSmartphone = new Smartphone();
+    private Tablet nuevoTablet = new Tablet();
+    private string tipoDispositivo = "Laptop";
+    private bool mostrarTabla = false;
+
+    private void MostrarDispositivos()
+    {
+        switch (tipoDispositivo)
+        {
+            case "Laptop":
+                dispositivos.Add(nuevoLaptop);
+                break;
+            case "Smartphone":
+                dispositivos.Add(nuevoSmartphone);
+                break;
+            case "Tablet":
+                dispositivos.Add(nuevoTablet);
+                break;
+        }
+
+        mostrarTabla = true;
+    }
+}

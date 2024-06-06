@@ -1,0 +1,64 @@
+﻿@page "/DispositivosGuardados"
+@using InventarioElectronica.Models
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<h3>Dispositivos Guardados</h3>
+
+@if (dispositivos.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Número de Serie</th>
+                <th>Marca</th>
+                <th>Modelo</th>
+                <th>Detalles</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var dispositivo in dispositivos)
+            {
+                <tr>
+                    <td>@dispositivo.NumeroDeSerie</td>
+                    <td>@dispositivo.Marca</td>
+                    <td>@dispositivo.Modelo</td>
+                    <td>
+                        @if (dispositivo is Laptop)
+                        {
+                            var laptop = dispositivo as Laptop;
+                            <text>Memoria RAM: @laptop.MemoriaRAM GB, Almacenamiento: @laptop.Almacenamiento GB</text>
+                        }
+                        else if (dispositivo is Smartphone)
+                        {
+                            var smartphone = dispositivo as Smartphone;
+                            <text>Sistema Operativo: @smartphone.SistemaOperativo, Número de Cámaras: @smartphone.NumeroDeCamaras</text>
+                        }
+                        else if (dispositivo is Tablet)
+                        {
+                            var tablet = dispositivo as Tablet;
+                            <text>Tamaño de Pantalla: @tablet.TamañoPantalla pulgadas, Soporte para Stylus: @tablet.SoporteParaStylus ? "Sí" : "No"</text>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay dispositivos guardados.</p>
+}
+
+@code {
+    private List<Dispositivo> dispositivos = new List<Dispositivo>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Cargar datos desde el almacenamiento local al inicializar el componente
+        var data = await localStorage.GetItemAsync<List<Dispositivo>>("dispositivos");
+        if (data != null)
+        {
+            dispositivos = data;
+        }
+    }
+}
